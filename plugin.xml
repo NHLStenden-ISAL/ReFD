@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+      id="nl.ou.refd.markers.dangerMarker"
+      name = "Refactoring Danger"
+      point="org.eclipse.core.resources.markers">
+      <super type="org.eclipse.core.resources.problemmarker"/>
+      <persistent value="true" />
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="nl.ou.refd.plugin.ui.topbarmenu.PullUpMethodButton"
+            id="refd.PullUpMethodButton"
+            name="PullUpMethodButton">
+      </command>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="nl.ou.refd.plugin.ui.topbarmenu.CombineMethodsIntoClassButton"
+            id="refd.CombineMethodsIntoClassButton"
+            name="CombineMethodsIntoClassButton">
+      </command>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="menu:org.eclipse.ui.main.menu">
+         <menu
+               id="RGW"
+               label="ReFD">
+            <command
+                  commandId="refd.PullUpMethodButton"
+                  label="Pull Up Method"
+                  style="push"
+                  tooltip="Pull up a method to one of its superclasses">
+            </command>
+            <command
+                  commandId="refd.CombineMethodsIntoClassButton"
+                  label="Combine Methods into Class"
+                  style="push"
+                  tooltip="Combine a number of methods into a newly created class">
+            </command>
+            
+         </menu>
+      </menuContribution>
+   </extension>
+   
+   
+</plugin>
