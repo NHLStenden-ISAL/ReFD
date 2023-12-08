@@ -20,7 +20,7 @@ public class MoveMethod extends CompositeMicrostep {
 	 * @param destination the destination class to move the method to
 	 */
 	public MoveMethod(MethodSpecification target, MethodSpecification destination) {
-		potentialRisk(new BrokenLocalReferences.Body(target.getBody()));
+		potentialRisk(new BrokenLocalReferences.Body(target.getBody(), destination.getEnclosingClass()));
 		
 		compositeMicrostep(new AddMethod(destination));
 		compositeMicrostep(new RemoveMethod(target));

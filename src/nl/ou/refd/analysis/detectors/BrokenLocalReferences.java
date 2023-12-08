@@ -1,7 +1,9 @@
 package nl.ou.refd.analysis.detectors;
 
 import nl.ou.refd.analysis.DetectorVisitor;
+import nl.ou.refd.locations.collections.ClassSet;
 import nl.ou.refd.locations.collections.InstructionSet;
+import nl.ou.refd.locations.specifications.ClassSpecification;
 import nl.ou.refd.locations.streams.ClassStream;
 import nl.ou.refd.locations.streams.InstructionStream;
 
@@ -20,13 +22,15 @@ public final class BrokenLocalReferences {
 	public static class Body extends Detector<InstructionSet> {
 		
 		private final InstructionStream existingBody;
+		private final ClassSpecification newContext;
 		
 		/**
 		 * Creates the detector with its context.
 		 * @param existingBody the context
 		 */
-		public Body(InstructionStream existingBody) {			
+		public Body(InstructionStream existingBody, ClassSpecification newContext) {			
 			this.existingBody = existingBody;
+			this.newContext = newContext;
 		}
 		
 		/**
@@ -34,15 +38,28 @@ public final class BrokenLocalReferences {
 		 */
 		@Override
 		public InstructionSet actualRisks() {
-			ClassStream localClassContext = existingBody.parentMethods().parentClasses();
+			ClassStream destinationContext = new ClassSet(newContext).stream();
+			ClassStream fullDestinationContext = destinationContext
+												 .unionWithClasses(
+														 destinationContext
+														 .allSuperClasses()
+												 );
+			
+			ClassStream localClass = existingBody.parentMethods().parentClasses();
+			ClassStream adjustedLocalContext = localClass
+											   .unionWithClasses(
+													   localClass
+													   .allSuperClasses()
+											   ).differenceWithClasses(fullDestinationContext);
+			
 			InstructionStream body = existingBody;
 			
 			return body.methodCalls().union(body.fieldCalls())
 			.intersectionWithInstructions(
-				localClassContext
+					adjustedLocalContext
 				.methods()
 				.methodsCalledAt()
-				.union(localClassContext
+				.union(adjustedLocalContext
 						.fields()
 						.fieldsCalledAt()
 					)
